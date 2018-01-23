@@ -1,0 +1,31 @@
+services:
+    mafiascum.authentication.listener:
+        class: mafiascum\authentication\event\main_listener
+        arguments:
+            - '@controller.helper'
+            - '@template'
+            - '@request'
+            - '@dbal.conn'
+            - '@user'
+            - '@user_loader'
+            - '@language'
+            - '@auth'
+            - '%core.table_prefix%'
+        tags:
+            - { name: event.listener }
+    mafiascum.authentication.verifyUsernameController:
+        class: mafiascum\authentication\controller\verifyUsername
+        arguments:
+            - '@request'
+            - '@user_loader'
+
+    mafiascum.authentication.verifyAltRequestController:
+        class: mafiascum\authentication\controller\verifyAltRequest
+        arguments:
+            - '@request'
+            - '@user'
+            - '@dbal.conn'
+            - '@language'
+            - '@template'
+            - '@controller.helper'
+

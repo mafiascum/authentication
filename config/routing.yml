@@ -1,0 +1,7 @@
+verify_username_route:
+    path: /verify_username
+    defaults: { _controller: mafiascum.authentication.verifyUsernameController:handle }
+
+verify_alt_request_route:
+    path: /verify_alt_request
+    defaults: { _controller: mafiascum.authentication.verifyAltRequestController:handle }

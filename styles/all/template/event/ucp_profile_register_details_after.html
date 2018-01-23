@@ -1,0 +1,20 @@
+<dl>
+  <dt><label for="new_main">{{ lang('ALT_OF') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ALT_OF_EXPLAIN') }}</span></dt>
+  <dd><input id="main_user" type="text"> <input type="button" class="button2" value="{{ lang('ADD_USER') }}"
+                                               onclick="verify_username('main_user', 'main_user_list', 'main_users')"></dd>
+</dl>
+
+<dl><dd><div><ul id="main_user_list">
+    {% for user in MAIN_USERS %}
+    <li>
+      <input type="button" class="button2" value="x" onclick="splice_user('main_user_list', '{{ user.USER_ID }}')">
+      <input type="hidden" name="main_users[]" value="{{ user.USER_ID }}">
+      <a href="{{ user.PROFILE }}">{{ user.USERNAME }}</a>
+      {% if user.PENDING %}
+      <span>{{ lang('ALT_REQUEST_PENDING') }}</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+</ul></div></dd></dl>
+
+{% INCLUDEJS '/ext/mafiascum/authentication/styles/all/template/alts.js' %}
