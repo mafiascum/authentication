@@ -10,6 +10,9 @@ class verifyAltRequest
     /* @var \phpbb\user */
     protected $user;
 
+    /* @var \phpbb\db\driver\driver */
+	protected $db;
+
     /* phpbb\language\language */
     protected $language;
 

@@ -1,31 +1,40 @@
 services:
-    mafiascum.authentication.listener:
-        class: mafiascum\authentication\event\main_listener
-        arguments:
-            - '@controller.helper'
-            - '@template'
-            - '@request'
-            - '@dbal.conn'
-            - '@user'
-            - '@user_loader'
-            - '@language'
-            - '@auth'
-            - '%core.table_prefix%'
-        tags:
-            - { name: event.listener }
-    mafiascum.authentication.verifyUsernameController:
-        class: mafiascum\authentication\controller\verifyUsername
-        arguments:
-            - '@request'
-            - '@user_loader'
+  mafiascum.authentication.listener:
+    class: mafiascum\authentication\event\main_listener
+    arguments:
+      - '@controller.helper'
+      - '@template'
+      - '@request'
+      - '@dbal.conn'
+      - '@user'
+      - '@user_loader'
+      - '@language'
+      - '@auth'
+      - '%core.table_prefix%'
+    tags:
+      - { name: event.listener }
+  mafiascum.authentication.verifyUsernameController:
+    class: mafiascum\authentication\controller\verifyUsername
+    arguments:
+      - '@request'
+      - '@user_loader'
 
-    mafiascum.authentication.verifyAltRequestController:
-        class: mafiascum\authentication\controller\verifyAltRequest
-        arguments:
-            - '@request'
-            - '@user'
-            - '@dbal.conn'
-            - '@language'
-            - '@template'
-            - '@controller.helper'
+  mafiascum.authentication.verifyAltRequestController:
+    class: mafiascum\authentication\controller\verifyAltRequest
+    arguments:
+      - '@request'
+      - '@user'
+      - '@dbal.conn'
+      - '@language'
+      - '@template'
+      - '@controller.helper'
 
+  mafiascum.authentication.mafiascum_authentication_autoRemove:
+    class: mafiascum\authentication\task\mafiascum_authentication_autoRemove
+    arguments:
+      - '@config'
+      - '@dbal.conn'
+    calls:
+      - [set_name, [mafiascum_authentication_autoRemove.mafiascum_authentication_autoRemove]]
+    tags:
+      - { name: cron.task }

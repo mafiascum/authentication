@@ -41,6 +41,11 @@ class authentication extends \phpbb\db\migration\migration
                     ),
                 ),
             ),
+            'add_columns' => array(
+                $this->table_prefix . 'user_group' => array(
+                    'auto_remove_time' => array('UINT:11', 0),
+                ),
+            ),
         );
     }
 
@@ -50,6 +55,11 @@ class authentication extends \phpbb\db\migration\migration
             'drop_tables'    => array(
                 $this->table_prefix . 'alts',
                 $this->table_prefix . 'alt_requests',
+            ),
+            'drop_columns'   => array(
+                $this->table_prefix . 'user_group' => array(
+                    'auto_remove_time',
+                ),
             ),
         );
     }
