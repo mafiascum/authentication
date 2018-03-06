@@ -49,6 +49,7 @@ class main_listener implements EventSubscriberInterface
             'core.ucp_profile_reg_details_data' => 'inject_alts_template_data',
             'core.ucp_profile_reg_details_sql_ary' => 'create_delete_pending_alt_requests',
             'core.ucp_profile_reg_details_validate' => 'validate_alt_payload',
+            'core.ucp_register_user_row_after' => 'ucp_register_user_row_after',
         );
     }
 
@@ -200,6 +201,15 @@ class main_listener implements EventSubscriberInterface
                 'PENDING'       => $main_user['status'] == 'pending',
             ));
         }
+    }
+
+    function ucp_register_user_row_after($event) {
+        //Disable display email option by default when registering.
+        $user_row = $event['user_row'];
+        
+        $user_row['user_allow_viewemail'] = 0;
+        
+        $event['user_row'] = $user_row;
     }
 }
 ?>
