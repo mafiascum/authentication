@@ -26,7 +26,8 @@ $lang = array_merge($lang, array(
 
 The account "%s" would like to add you as a main or alias. Please [url="app.php/verify_alt_request?alt_request_id=%s&token=%s"]click here[/url] to confirm this request. If this action was performed in error, you may reply to this PM or ignore this request.',
     'ALT_REQUEST_PENDING' => " (Pending)",
-    'ERROR_CANNOT_ADD_SELF_AS_MAIN_OR_ALIAS' => 'You may not add yourself as a main or alias.',
+	'ERROR_CANNOT_ADD_SELF_AS_MAIN_OR_ALIAS' => 'You may not add yourself as a main or alias.',
+    'OLD_EMAILS' => 'Old emails',
     'VERIFICATION_REQUEST_CONFIRMED' => 'This verification request has been successfully confirmed!',
     'VERIFICATION_REQUEST_DOES_NOT_EXIST' => 'This verification request does not exist, has already been verified, or is not associated with this user.',
 ));

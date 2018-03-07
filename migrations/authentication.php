@@ -44,8 +44,11 @@ class authentication extends \phpbb\db\migration\migration
             'add_columns' => array(
                 $this->table_prefix . 'user_group' => array(
                     'auto_remove_time' => array('UINT:11', 0),
-                ),
-            ),
+				),
+				$this->table_prefix . 'users' => array(
+					'user_old_emails' => array('TEXT', '')
+				)
+			),
         );
     }
 

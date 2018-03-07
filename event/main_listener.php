@@ -49,7 +49,10 @@ class main_listener implements EventSubscriberInterface
             'core.ucp_profile_reg_details_data' => 'inject_alts_template_data',
             'core.ucp_profile_reg_details_sql_ary' => 'create_delete_pending_alt_requests',
             'core.ucp_profile_reg_details_validate' => 'validate_alt_payload',
-            'core.ucp_register_user_row_after' => 'ucp_register_user_row_after',
+			'core.ucp_register_user_row_after' => 'ucp_register_user_row_after',
+			'core.ucp_profile_reg_details_sql_ary' => 'ucp_profile_reg_details_sql_ary',
+			'core.acp_users_overview_modify_data' => 'acp_users_overview_modify_data',
+			'core.acp_users_overview_before' => 'acp_users_overview_before',
         );
     }
 
@@ -210,6 +213,58 @@ class main_listener implements EventSubscriberInterface
         $user_row['user_allow_viewemail'] = 0;
         
         $event['user_row'] = $user_row;
-    }
+	}
+	
+	function ucp_profile_reg_details_sql_ary($event) {
+		$existing_email = $this->user->data['user_email'];
+		$submitted_email = $event['data']['email'];
+
+		if(strcmp($existing_email, $submitted_email)) {
+			$this->user->data['user_old_emails'] = $this->get_updated_old_emails_field($this->user->data['user_old_emails'], $existing_email);
+			
+			$sql_ary = $event['sql_ary'];
+
+			$sql_ary['user_old_emails'] = $this->user->data['user_old_emails'];
+
+			$event['sql_ary'] = $sql_ary;
+		}
+	}
+
+	function acp_users_overview_modify_data($event) {
+		$user_row = $event['user_row'];
+		$data = $event['data'];
+		$sql_ary = $event['sql_ary'];
+
+		$existing_email = $user_row['user_email'];
+		$submitted_email = $data['email'];
+
+		if(strcmp($existing_email, $submitted_email)) {
+			$user_row['user_old_emails'] = $this->get_updated_old_emails_field($user_row['user_old_emails'], $existing_email);
+
+			$sql_ary = $event['sql_ary'];
+
+			$sql_ary['user_old_emails'] = $user_row['user_old_emails'];
+
+			$event['sql_ary'] = $sql_ary;
+		}
+	}
+
+	function get_updated_old_emails_field($old_emails, $existing_email) {
+		return  $old_emails
+				. (strlen($old_emails) > 0 ? "\n" : "")
+				. $existing_email;
+	}
+
+	function acp_users_overview_before($event) {
+		$user_row = $event['user_row'];
+		$old_emails = explode("\n", $user_row['user_old_emails']);
+
+		foreach ($old_emails as $old_email)
+		{
+			$this->template->assign_block_vars('old_emails', array(
+				'OLD_EMAIL'        => ($old_email)
+			));
+		}
+	}
 }
 ?>
