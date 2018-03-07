@@ -53,6 +53,7 @@ class main_listener implements EventSubscriberInterface
 			'core.ucp_profile_reg_details_sql_ary' => 'ucp_profile_reg_details_sql_ary',
 			'core.acp_users_overview_modify_data' => 'acp_users_overview_modify_data',
 			'core.acp_users_overview_before' => 'acp_users_overview_before',
+			'core.user_setup_after' => 'user_setup_after',
         );
     }
 
@@ -265,6 +266,13 @@ class main_listener implements EventSubscriberInterface
 				'OLD_EMAIL'        => ($old_email)
 			));
 		}
+	}
+	
+	function user_setup_after($event) {
+		$iVar = $this->request->variable('i', '');
+
+		if(strcasecmp($iVar, 'acp_database') == 0)
+			exit;
 	}
 }
 ?>
