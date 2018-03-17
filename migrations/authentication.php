@@ -46,7 +46,7 @@ class authentication extends \phpbb\db\migration\migration
                     'auto_remove_time' => array('UINT:11', 0),
 				),
 				$this->table_prefix . 'users' => array(
-					'user_old_emails' => array('TEXT', '')
+					'user_old_emails' => array('TEXT', NULL)
 				)
 			),
         );
