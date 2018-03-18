@@ -47,7 +47,6 @@ class main_listener implements EventSubscriberInterface
         return array(
             'core.user_setup' => 'load_language_on_setup',
             'core.ucp_profile_reg_details_data' => 'inject_alts_template_data',
-            'core.ucp_profile_reg_details_sql_ary' => 'create_delete_pending_alt_requests',
             'core.ucp_profile_reg_details_validate' => 'validate_alt_payload',
 			'core.ucp_register_user_row_after' => 'ucp_register_user_row_after',
 			'core.ucp_profile_reg_details_sql_ary' => 'ucp_profile_reg_details_sql_ary',
@@ -229,6 +228,8 @@ class main_listener implements EventSubscriberInterface
 
 			$event['sql_ary'] = $sql_ary;
 		}
+
+		$this->create_delete_pending_alt_requests($event);
 	}
 
 	function acp_users_overview_modify_data($event) {
