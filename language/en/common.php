@@ -29,5 +29,6 @@ The account "%s" would like to add you as a main or alias. Please [url="app.php/
 	'ERROR_CANNOT_ADD_SELF_AS_MAIN_OR_ALIAS' => 'You may not add yourself as a main or alias.',
     'OLD_EMAILS' => 'Old emails',
     'VERIFICATION_REQUEST_CONFIRMED' => 'This verification request has been successfully confirmed!',
-    'VERIFICATION_REQUEST_DOES_NOT_EXIST' => 'This verification request does not exist, has already been verified, or is not associated with this user.',
+	'VERIFICATION_REQUEST_DOES_NOT_EXIST' => 'This verification request does not exist, has already been verified, or is not associated with this user.',
+	'WIKI_PAGE' => 'Wiki page',
 ));

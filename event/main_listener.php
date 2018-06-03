@@ -53,6 +53,8 @@ class main_listener implements EventSubscriberInterface
 			'core.acp_users_overview_modify_data' => 'acp_users_overview_modify_data',
 			'core.acp_users_overview_before' => 'acp_users_overview_before',
 			'core.user_setup_after' => 'user_setup_after',
+			'core.acp_users_mode_add' => 'acp_users_mode_add',
+			'core.memberlist_view_profile' => 'memberlist_view_profile'
         );
     }
 
@@ -274,6 +276,26 @@ class main_listener implements EventSubscriberInterface
 
 		if(strcasecmp($iVar, 'acp_database') == 0)
 			exit;
+	}
+
+	function acp_users_mode_add($event) {
+		echo $event['mode'];
+		exit;
+	}
+
+	function memberlist_view_profile($event) {
+
+		$member = $event['member'];
+		$username = $member['username'];
+		
+		$this->template->assign_vars(array(
+			'WIKI_NAME' => $username,
+			'WIKI_URL' => $this->get_user_wiki_url($username)
+		));
+	}
+
+	function get_user_wiki_url($username) {
+		return "https://wiki.mafiascum.net/index.php?title=" . urlencode($username);
 	}
 }
 ?>
