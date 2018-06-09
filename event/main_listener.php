@@ -49,6 +49,7 @@ class main_listener implements EventSubscriberInterface
             'core.ucp_profile_reg_details_data' => 'inject_alts_template_data',
             'core.ucp_profile_reg_details_sql_ary' => 'create_delete_pending_alt_requests',
             'core.ucp_profile_reg_details_validate' => 'validate_alt_payload',
+			'core.acp_users_display_overview' => 'inject_acp_alt_overview_data'
         );
     }
 
@@ -64,7 +65,17 @@ class main_listener implements EventSubscriberInterface
         $this->auth = $auth;
         $this->table_prefix = $table_prefix;
     }
-
+	public function inject_acp_alt_overview_data($event){
+		global $phpbb_admin_path, $phpEx;
+		$user_row = $event["user_row"];
+		$user_id = $user_row["user_id"];
+		$userAltData = \mafiascum\authentication\includes\AltManager::getAlts($this->table_prefix, $user_id);
+		
+		$accountType = "<a href=" . append_sid("{$phpbb_admin_path}index.$phpEx", "i=-mafiascum-authentication-acp-alts_module&amp;mode=manage&amp;u={$user_id}") . ">" . $userAltData->getAccountType() . "</a>";
+		$this->template->assign_vars(array(
+			'ACCOUNT_TYPE'       => $accountType,
+		));
+	}
     private function send_alt_request_pm($main_user_id, $alt_request_id, $token) {
         global $phpEx, $phpbb_root_path;
 
