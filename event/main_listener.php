@@ -74,7 +74,6 @@ class main_listener implements EventSubscriberInterface
         $this->auth = $auth;
         $this->table_prefix = $table_prefix;
     }
-
 	public function inject_acp_alt_overview_data($event){
 		global $phpbb_admin_path, $phpEx;
 		$user_row = $event["user_row"];
