@@ -6,7 +6,7 @@ class authentication extends \phpbb\db\migration\migration
 {
 
     public function effectively_installed()
-    {
+    {	
         return $this->db_tools->sql_table_exists($this->table_prefix . 'alts');
     }
     
@@ -15,6 +15,29 @@ class authentication extends \phpbb\db\migration\migration
         return array('\phpbb\db\migration\data\v31x\v314');
     }
     
+	public function update_data()
+    {
+        return array(
+
+            // Add a parent module ALTS_MANAGEMENT to the Extensions tab (ACP_CAT_DOT_MODS)
+            array('module.add', array(
+                'acp',
+                'ACP_CAT_USERGROUP',
+                'ALTS_MANAGEMENT_TITLE'
+            )),
+
+            // Add our main_module to the parent module (ACP_DEMO_TITLE)
+            array('module.add', array(
+                'acp',
+                'ALTS_MANAGEMENT_TITLE',
+                array(
+                    'module_basename'       => '\mafiascum\authentication\acp\alts_module',
+                    'modes'                         => array('manage'),
+                ),
+            )),
+        );
+    }
+	
     public function update_schema()
     {
         return array(
