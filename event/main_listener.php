@@ -54,7 +54,7 @@ class main_listener implements EventSubscriberInterface
 			'core.acp_users_overview_before' => 'acp_users_overview_before',
 			'core.user_setup_after' => 'user_setup_after',
 			'core.acp_users_mode_add' => 'acp_users_mode_add',
-			'core.memberlist_view_profile' => 'memberlist_view_profile'
+			'core.memberlist_view_profile' => 'memberlist_view_profile',
 			'core.acp_users_display_overview' => 'inject_acp_alt_overview_data'
         );
     }
