@@ -48,7 +48,6 @@ class main_listener implements EventSubscriberInterface
             'core.user_setup' => 'load_language_on_setup',
             'core.ucp_profile_reg_details_data' => 'inject_alts_template_data',
             'core.ucp_profile_reg_details_validate' => 'validate_alt_payload',
-<<<<<<< HEAD
 			'core.ucp_register_user_row_after' => 'ucp_register_user_row_after',
 			'core.ucp_profile_reg_details_sql_ary' => 'ucp_profile_reg_details_sql_ary',
 			'core.acp_users_overview_modify_data' => 'acp_users_overview_modify_data',
@@ -56,9 +55,7 @@ class main_listener implements EventSubscriberInterface
 			'core.user_setup_after' => 'user_setup_after',
 			'core.acp_users_mode_add' => 'acp_users_mode_add',
 			'core.memberlist_view_profile' => 'memberlist_view_profile'
-=======
 			'core.acp_users_display_overview' => 'inject_acp_alt_overview_data'
->>>>>>> master
         );
     }
 
