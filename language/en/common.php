@@ -43,4 +43,6 @@ The account "%s" would like to add you as a main or alias. Please [url="app.php/
 	'SELECT_USER' => 'Select a user',
 	'USER_ADMIN_EXPLAIN' => 'search for a user to manage',
 	'NO_MATCHES_FOUND' => 'No matches found',
+	'L_ACCOUNT_LINK' => 'Account Alts',
+	'NO_USER' => 'No user found'
 ));

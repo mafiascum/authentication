@@ -31,7 +31,7 @@ class alts_module
 			$db->sql_freeresult($result);
 			if (!$user_id)
 			{
-				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error('No user found.' . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		add_form_key('ms_authentication_alts_alts');
@@ -60,7 +60,7 @@ class alts_module
 					} else if ($request->is_set_post('submituser')) {
 						if (!check_form_key('ms_authentication_alts_alts'))
 						{
-							 trigger_error('FORM_INVALID');
+							 trigger_error('FORM_INVALID', E_USER_WARNING);
 						}
 						if($action == 'addalt'){
 							$alt_username = utf8_clean_string($request->variable('alt_add_username', ''));
@@ -72,7 +72,7 @@ class alts_module
 							$resultSet = $db->sql_query($sql);
 
 							if(!($row = $db->sql_fetchrow($resultSet))) {
-								trigger_error('No User Found.');
+								trigger_error('No user found.' . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							$alt_user_id = $row['user_id'];
@@ -81,12 +81,12 @@ class alts_module
 
 							if($userAltData->isHydra()) {
 
-								trigger_error('Cannot add an alt to a hydra. You must add the hydra as an alt of another user.');
+								trigger_error('Cannot add an alt to a hydra. You must add the hydra as an alt of another user.'. adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							if($userAltData->hasAlt($alt_user_id) || $userAltData->hasMain($alt_user_id)) {
 
-								trigger_error("Alt already added.");
+								trigger_error("Alt already added.". adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							$sql = 'INSERT INTO ' . $alt_table_name
@@ -98,63 +98,64 @@ class alts_module
 							$db->sql_query($sql);
 						}
 					} 
-					$template->assign_vars(array(
-								'ACCOUNT_TYPE'		=> $userAltData->getAccountType(),
-								'S_CAN_ADD_ALT'		 => ($userAltData->isMain() ? true : false),
-								'U_ACTION'          => $this->u_action,
-								'S_SELECT_USER'		=> false,
-								'U_USER_ID'			=> $user_row['user_id'],
+					//User alt table
+					$userAltData = \mafiascum\authentication\includes\AltManager::getAlts($table_prefix, $user_row['user_id']);
+					$alts = $userAltData->getAllAlts();
+
+					$userAltData->loadAltUserData($table_prefix);
+
+					$index = 0;
+					$username = "";
+					while($index < count($alts)) {
+						$alt_user_id = $alts[ $index ];
+						$row = $userAltData->getAltUserData($alt_user_id);
+						if ($user_id == $row['user_id']){
+							$username = $row['username'];
+						}
+						$template->assign_block_vars('useraltrow', array(
+							'USERNAME'		=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
+							'U_PROFILE'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+							'ACCOUNT_TYPE'	=> ($userAltData->hasMain($alt_user_id) ? 'Main' : ($row['is_hydra'] ? 'Hydra' : 'Alt')),
+							'ACCOUNT_LINK'	=> $this->u_action . '&amp;u=' . $row['user_id'],
+							'REMOVE_URL'	=> $this->u_action . '&amp;u=' . $user_id . '&amp;action=removealt&amp;alt_user_id=' . $row['user_id'],
+							'CAN_REMOVE'	=> ($userAltData->isMain() && !$userAltData->hasMain($alt_user_id) ? 1 : 0),
 						));
-						//Create all necessary regex for IP and email matching.
-						$ip_set = explode('.', $user_row['user_ip']);
-						$ip_exp = ($user_row['user_ip'] == '') ? '^$' : '^'.$ip_set[0]. '.' . $ip_set[1] . '.' . $ip_set[2] . '.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$';
-						$email_set = explode('@', $user_row['user_email']);
-						$email_exp = '^'.$email_set[0].'@';
-						// Get other users who've posted under this IP or Email
-						$sql = 'SELECT user_id, user_email, username, user_ip
-							FROM ' . USERS_TABLE . '
-							WHERE (user_ip != "" AND user_ip REGEXP "' . $ip_exp .'")
-							OR user_email REGEXP "' . $email_exp .'"';
-						$result = $db->sql_query($sql);
-						//Create table of associated accounts.
-						while ($row = $db->sql_fetchrow($result))
+
+						++$index;
+					}
+					$template->assign_vars(array(
+							'ACCOUNT_TYPE'		=> $userAltData->getAccountType(),
+							'S_CAN_ADD_ALT'		 => ($userAltData->isMain() ? true : false),
+							'U_ACTION'          => $this->u_action,
+							'S_SELECT_USER'		=> false,
+							'U_USER_ID'			=> $user_row['user_id'],
+							'U_USERNAME'	=> $username
+					));
+					//Create all necessary regex for IP and email matching.
+					$ip_set = explode('.', $user_row['user_ip']);
+					$ip_exp = ($user_row['user_ip'] == '') ? '^$' : '^'.$ip_set[0]. '.' . $ip_set[1] . '.' . $ip_set[2] . '.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$';
+					$email_set = explode('@', $user_row['user_email']);
+					$email_exp = '^'.$email_set[0].'@';
+					// Get other users who've posted under this IP or Email
+					$sql = 'SELECT user_id, user_email, username, user_ip
+						FROM ' . USERS_TABLE . '
+						WHERE (user_ip != "" AND user_ip REGEXP "' . $ip_exp .'")
+						OR user_email REGEXP "' . $email_exp .'"';
+					$result = $db->sql_query($sql);
+					//Create table of associated accounts.
+					while ($row = $db->sql_fetchrow($result))
+					{
+						//Make sure the master isn't associated with itself.
+						if($row['user_id'] != $user_row['user_id'])
 						{
-							//Make sure the master isn't associated with itself.
-							if($row['user_id'] != $user_row['user_id'])
-							{
-								$template->assign_block_vars('userrow', array(
-									'USERNAME'        => ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
-									'EMAIL'        =>     (preg_match('/'.$email_exp.'/', $row['user_email'])) ? '<span style="color:red;">' .$row['user_email']. '</span>' : $row['user_email'],
-									'IP'            =>     (preg_match('/'.$ip_exp.'/', $row['user_ip'])) ? '<span style="color:red;">' .$row['user_ip']. '</span>' : $row['user_ip'],
-									'U_PROFILE'        => append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}")
-								));
-							}
-						}
-						
-						//User alt table
-						$userAltData = \mafiascum\authentication\includes\AltManager::getAlts($table_prefix, $user_row['user_id']);
-						$alts = $userAltData->getAllAlts();
-
-						$userAltData->loadAltUserData($table_prefix);
-
-						$index = 0;
-
-						while($index < count($alts)) {
-
-							$alt_user_id = $alts[ $index ];
-
-							$row = $userAltData->getAltUserData($alt_user_id);
-
-							$template->assign_block_vars('useraltrow', array(
-								'USERNAME'		=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
-								'U_PROFILE'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
-								'ACCOUNT_TYPE'	=> ($userAltData->hasMain($alt_user_id) ? 'Main' : ($row['is_hydra'] ? 'Hydra' : 'Alt')),
-								'REMOVE_URL'	=> $this->u_action . '&amp;u=' . $user_id . '&amp;action=removealt&amp;alt_user_id=' . $row['user_id'],
-								'CAN_REMOVE'	=> ($userAltData->isMain() && !$userAltData->hasMain($alt_user_id) ? 1 : 0),
+							$template->assign_block_vars('userrow', array(
+								'USERNAME'        => ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
+								'EMAIL'        =>     (preg_match('/'.$email_exp.'/', $row['user_email'])) ? '<span style="color:red;">' .$row['user_email']. '</span>' : $row['user_email'],
+								'IP'            =>     (preg_match('/'.$ip_exp.'/', $row['user_ip'])) ? '<span style="color:red;">' .$row['user_ip']. '</span>' : $row['user_ip'],
+								'U_PROFILE'        => append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}")
 							));
-
-							++$index;
 						}
+					}
 				} else {
 					$template->assign_vars(array(
 							'S_SELECT_USER'		=> true,

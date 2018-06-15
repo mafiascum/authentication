@@ -1,8 +1,8 @@
 <!-- INCLUDE overall_header.html -->
 
-<h1>{L_ALTS_MANAGE}</h1>
-<!-- IF S_SELECT_USER -->
 
+<!-- IF S_SELECT_USER -->
+<h1>{L_ALTS_MANAGE}</h1>
 	<p>{L_USER_ADMIN_EXPLAIN}</p>
 
 	<form id="select_user" method="post" action="{U_ACTION}">
@@ -24,11 +24,13 @@
 
 	</form>
 <!-- ELSE -->
+	<h1>{L_ALTS_MANAGE} :: {U_USERNAME}</h1>
 	<table class="table1" cellspacing="1">
 		<thead>
 			<tr>
 				<th class="name">{L_ASSOCIATED_ACCOUNTS}</th>
 				<th class="posts">{L_ACCOUNT_TYPE}</th>
+				<th class="posts">{L_ACCOUNT_LINK}</th>
 				<th class="remove">{L_REMOVE}</th>
 			</tr>
 		</thead>
@@ -37,6 +39,7 @@
 			<tr class="<!-- IF useraltrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 				<td><!-- IF useraltrow.U_PROFILE --><a href="{useraltrow.U_PROFILE}">{useraltrow.USERNAME}</a><!-- ELSE -->{useraltrow.USERNAME}<!-- ENDIF --></td>
 				<td class="account_type">{useraltrow.ACCOUNT_TYPE}</td>
+				<td class="account_link"><a href="{useraltrow.ACCOUNT_LINK}"> alts </a></td>
 				<td class="remove"><!-- IF useraltrow.CAN_REMOVE --><a href="{useraltrow.REMOVE_URL}">{L_REMOVE}</a><!-- ENDIF --></td>
 			</tr>
 			<!-- BEGINELSE -->
