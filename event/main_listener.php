@@ -56,6 +56,8 @@ class main_listener implements EventSubscriberInterface
 			'core.acp_users_mode_add' => 'acp_users_mode_add',
 			'core.memberlist_view_profile' => 'memberlist_view_profile',
 			'core.viewonline_modify_sql' => 'viewonline_modify_sql',
+			'core.acp_users_display_overview' => 'inject_acp_alt_overview_data',
+			'core.user_add_after' => 'check_user_conflicts'
         );
     }
 
@@ -71,7 +73,51 @@ class main_listener implements EventSubscriberInterface
         $this->auth = $auth;
         $this->table_prefix = $table_prefix;
     }
+	public function check_user_conflicts($event){
+		global $db, $config;
+		$user_row = $event["user_row"];
+		$user_id = $event["user_id"];
+		$ip_ary = $email_ary = array();
+		$ip_set = explode('.', $user_row['user_ip']);
+		$email_exp = explode('@', $user_row['user_email']);
+		$email_exp = '^'.$email_exp[0].'@';
+		$ip_exp = ($user_row['email'] == '') ? '^$' : '^'.$ip_set[0]. '.' . $ip_set[1] . '.' . $ip_set[2] . '.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$';
+		$sql = 'SELECT user_email, username, user_ip, user_id, user_regdate, main_user_id
+			FROM ' . USERS_TABLE . '
+			LEFT JOIN ' . ALT_TABLE . ' ON user_id=main_user_id
+			WHERE user_email = "' . $db->sql_escape($user_row['email']) .'"
+			OR user_ip REGEXP "' . $ip_exp .'"
+			OR user_email REGEXP "' . $email_exp .'"
+			ORDER BY user_regdate ASC, user_id ASC';
+		$result = $db->sql_query($sql);
 
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if($row['user_ip'] == $user_row['user_ip'])
+			{
+				$ip_ary[$row['username']] = $row['user_ip'];
+			}
+			if($row['user_email'] == $user_row['user_email'])
+			{
+				$email_ary[$row['username']] = $row['user_email'];
+			}
+		}
+		if(sizeOf($email_ary) || sizeOf($ip_ary) )
+		{
+			group_user_add($config['potential_alt_user_group'], array($user_id));
+		}
+	}
+	public function inject_acp_alt_overview_data($event){
+		global $phpbb_admin_path, $phpEx;
+		$user_row = $event["user_row"];
+		$user_id = $user_row["user_id"];
+		$userAltData = \mafiascum\authentication\includes\AltManager::getAlts($this->table_prefix, $user_id);
+		
+		$accountType = "<a href=" . append_sid("{$phpbb_admin_path}index.$phpEx", "i=-mafiascum-authentication-acp-alts_module&amp;mode=manage&amp;u={$user_id}") . ">" . $userAltData->getAccountType() . "</a>";
+		$this->template->assign_vars(array(
+			'ACCOUNT_TYPE'       => $accountType,
+		));
+	}
     private function send_alt_request_pm($main_user_id, $alt_request_id, $token) {
         global $phpEx, $phpbb_root_path;
 

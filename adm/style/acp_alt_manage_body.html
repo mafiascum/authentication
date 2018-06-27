@@ -1,0 +1,85 @@
+<!-- INCLUDE overall_header.html -->
+
+
+<!-- IF S_SELECT_USER -->
+<h1>{L_ALTS_MANAGE}</h1>
+	<p>{L_USER_ADMIN_EXPLAIN}</p>
+
+	<form id="select_user" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_SELECT_USER}</legend>
+	<dl>
+		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
+		<dd><input class="text medium" type="text" id="username" name="username" /></dd>
+		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
+		<dd class="full" style="text-align: left;"><label><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
+	</dl>
+
+	<p class="quick">
+		<input type="submit" name="submituser" value="{L_SUBMIT}" class="button1" />
+		{S_FORM_TOKEN}
+	</p>
+	</fieldset>
+
+	</form>
+<!-- ELSE -->
+	<h1>{L_ALTS_MANAGE} :: {U_USERNAME}</h1>
+	<table class="table1" cellspacing="1">
+		<thead>
+			<tr>
+				<th class="name">{L_ASSOCIATED_ACCOUNTS}</th>
+				<th class="posts">{L_ACCOUNT_TYPE}</th>
+				<th class="posts">{L_ACCOUNT_LINK}</th>
+				<th class="remove">{L_REMOVE}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- BEGIN useraltrow -->
+			<tr class="<!-- IF useraltrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+				<td><!-- IF useraltrow.U_PROFILE --><a href="{useraltrow.U_PROFILE}">{useraltrow.USERNAME}</a><!-- ELSE -->{useraltrow.USERNAME}<!-- ENDIF --></td>
+				<td class="account_type">{useraltrow.ACCOUNT_TYPE}</td>
+				<td class="account_link"><a href="{useraltrow.ACCOUNT_LINK}"> alts </a></td>
+				<td class="remove"><!-- IF useraltrow.CAN_REMOVE --><a href="{useraltrow.REMOVE_URL}">{L_REMOVE}</a><!-- ENDIF --></td>
+			</tr>
+			<!-- BEGINELSE -->
+			<tr>
+				<td colspan="3">{L_NO_ALTS_RECORDED}</td>
+			</tr>
+			<!-- END useraltrow -->
+		</tbody>
+	</table>
+	<!-- IF S_CAN_ADD_ALT -->
+	<form id="user_overview" method="post" action="{U_ACTION}">
+		<input type="hidden" name="action" value="addalt"/>
+		<input type="hidden" name="u" value="{U_USER_ID}"/>
+		<input type="text" size="20" name="alt_add_username"/>
+		<input type="submit" value="{L_ADD_ALT}" name="submituser" class="button1"/>
+		{S_FORM_TOKEN}
+	</form>
+	<!-- ENDIF -->
+	
+	<table class="table1" cellspacing="1">
+		<thead>
+			<tr>
+				<th class="name">{L_OTHER_ASSOC}</th>
+				<th class="posts">{L_IP}</th>
+				<th class="posts">{L_EMAIL}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- BEGIN userrow -->
+			<tr class="<!-- IF userrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+				<td><!-- IF userrow.U_PROFILE --><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a><!-- ELSE -->{userrow.USERNAME}<!-- ENDIF --></td>
+				<td class="ip">{userrow.IP}</td>
+				<td class="email">{userrow.EMAIL}</td>
+			</tr>
+			<!-- BEGINELSE -->
+			<tr>
+				<td colspan="3">{L_NO_MATCHES_FOUND}</td>
+			</tr>
+			<!-- END userrow -->
+		</tbody>
+	</table>
+<!-- ENDIF -->
+<!-- INCLUDE overall_footer.html -->
