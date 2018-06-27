@@ -54,7 +54,8 @@ class main_listener implements EventSubscriberInterface
 			'core.acp_users_overview_before' => 'acp_users_overview_before',
 			'core.user_setup_after' => 'user_setup_after',
 			'core.acp_users_mode_add' => 'acp_users_mode_add',
-			'core.memberlist_view_profile' => 'memberlist_view_profile'
+			'core.memberlist_view_profile' => 'memberlist_view_profile',
+			'core.viewonline_modify_sql' => 'viewonline_modify_sql',
         );
     }
 
@@ -296,6 +297,17 @@ class main_listener implements EventSubscriberInterface
 
 	function get_user_wiki_url($username) {
 		return "https://wiki.mafiascum.net/index.php?title=" . urlencode($username);
+	}
+
+	function viewonline_modify_sql($event) {
+		//Disable the viewonline list.
+		$sql_ary = $event['sql_ary'];
+		$where = $sql_ary['WHERE'];
+
+		$where .= ' AND 1 = 0';
+
+		$sql_ary['WHERE'] = $where;
+		$event['sql_ary'] = $sql_ary;
 	}
 }
 ?>
