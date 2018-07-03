@@ -13,11 +13,12 @@ function showHide(elem) {
     }
 }
 
-function verify_username(inputElemId, outputElemId, formElemName) {
+function verify_username(rootPath, inputElemId, outputElemId, formElemName) {
+	
     const inputElem = $(`#${inputElemId}`);
     const outputElem = $(`#${outputElemId}`);
 
-    fetch(`/app.php/verify_username?q=${inputElem.val()}`)
+    fetch(`${rootPath}app.php/verify_username?q=${inputElem.val()}`)
         .then(response => response.json())
         .then(data => {
             if (data.length) {

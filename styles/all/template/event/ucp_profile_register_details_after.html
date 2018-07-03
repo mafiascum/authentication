@@ -1,7 +1,7 @@
 <dl>
   <dt><label for="new_main">{{ lang('ALT_OF') }}{{ lang('COLON') }}</label><br /><span>{{ lang('ALT_OF_EXPLAIN') }}</span></dt>
   <dd><input id="main_user" class="inputbox autowidth" type="text"> <input type="button" class="button2" value="{{ lang('ADD_USER') }}"
-                                               onclick="verify_username('main_user', 'main_user_list', 'main_users')"></dd>
+                                               onclick="verify_username('{{ ROOT_PATH }}', 'main_user', 'main_user_list', 'main_users')"></dd>
 </dl>
 
 <dl><dd><div><ul id="main_user_list">
