@@ -74,6 +74,9 @@ class main_listener implements EventSubscriberInterface
         $this->table_prefix = $table_prefix;
     }
 	public function check_user_conflicts($event){
+		
+		return;
+
 		global $db, $config;
 		$user_row = $event["user_row"];
 		$user_id = $event["user_id"];
@@ -84,7 +87,7 @@ class main_listener implements EventSubscriberInterface
 		$ip_exp = ($user_row['email'] == '') ? '^$' : '^'.$ip_set[0]. '.' . $ip_set[1] . '.' . $ip_set[2] . '.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$';
 		$sql = 'SELECT user_email, username, user_ip, user_id, user_regdate, main_user_id
 			FROM ' . USERS_TABLE . '
-			LEFT JOIN ' . ALT_TABLE . ' ON user_id=main_user_id
+			LEFT JOIN ' . $this->table_prefix . 'alts ON user_id=main_user_id
 			WHERE user_email = "' . $db->sql_escape($user_row['email']) .'"
 			OR user_ip REGEXP "' . $ip_exp .'"
 			OR user_email REGEXP "' . $email_exp .'"
