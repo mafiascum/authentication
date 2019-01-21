@@ -12,7 +12,7 @@ class alts_info
             'modes'    => array(
 				'manage'  => array(
                     'title' => 'ACP_ALT_MANAGE',
-                    'auth'  => 'acl_a_board',
+                    'auth'  => 'acl_a_user',
                     'cat'   => array('ALTS_MANAGEMENT_TITLE'),
                 ),
             ),
