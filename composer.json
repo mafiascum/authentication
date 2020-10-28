@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "Mafiascum Authentication & User Management",
     "homepage": "https://github.com/mafiascum/authentication",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "time": "2017-12-17",
     "license": "GPL-2.0",
     "authors": [{
