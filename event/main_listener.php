@@ -56,8 +56,9 @@ class main_listener implements EventSubscriberInterface
 			'core.acp_users_mode_add' => 'acp_users_mode_add',
 			'core.memberlist_view_profile' => 'memberlist_view_profile',
 			'core.viewonline_modify_sql' => 'viewonline_modify_sql',
-			'core.acp_users_display_overview' => 'inject_acp_alt_overview_data',
-			'core.user_add_after' => 'check_user_conflicts'
+            'core.acp_users_display_overview' => 'inject_acp_alt_overview_data',
+            'core.user_add_after' => 'check_user_conflicts',
+            'core.viewforum_get_topic_data' => 'disable_anonymous_new_topics',
         );
     }
 
@@ -350,6 +351,14 @@ class main_listener implements EventSubscriberInterface
 
 		$sql_ary['WHERE'] = $where;
 		$event['sql_ary'] = $sql_ary;
-	}
+    }
+    
+    function disable_anonymous_new_topics($event) {
+        if ($this->user->data['user_id'] == ANONYMOUS) {
+            $this->template->assign_vars(array(
+                'S_DISPLAY_POST_INFO'       => false,
+            ));
+        }
+    }
 }
 ?>
