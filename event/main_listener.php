@@ -59,6 +59,9 @@ class main_listener implements EventSubscriberInterface
             'core.acp_users_display_overview' => 'inject_acp_alt_overview_data',
             'core.user_add_after' => 'check_user_conflicts',
             'core.viewforum_get_topic_data' => 'disable_anonymous_new_topics',
+            'core.viewtopic_get_post_data' => 'append_vla_select_cols',
+            'core.viewtopic_cache_user_data' => 'cache_vla_cols',
+            'core.viewtopic_modify_post_row' => 'assoc_vla_data',
         );
     }
 
@@ -359,6 +362,63 @@ class main_listener implements EventSubscriberInterface
                 'S_DISPLAY_POST_INFO'       => false,
             ));
         }
+    }
+
+    function append_vla_select_cols($event) {
+        $sql_ary = $event['sql_ary'];
+        $select = $sql_ary['SELECT'];
+        $select .= ', u.user_vla_start, u.user_vla_till';
+        $sql_ary['SELECT'] = $select;
+        $event['sql_ary'] = $sql_ary;
+    }
+
+    private static function get_vla_start_time($vlaStartField){
+        $vlaStartDateArray = explode('-', $vlaStartField);
+        return count($vlaStartDateArray) < 3 ? NULL : mktime(0, 0, 0, $vlaStartDateArray[1], $vlaStartDateArray[0], $vlaStartDateArray[2]);
+    }
+
+    private static function get_vla_end_time($vlaEndField) {
+        $vlaEndDateArray = explode('-', $vlaEndField);
+        return count($vlaEndDateArray) < 3 ? NULL : mktime(23, 59, 59, $vlaEndDateArray[1], $vlaEndDateArray[0], $vlaEndDateArray[2]);
+    }
+
+    private static function is_user_vla($vlaStartField, $vlaEndField) {
+        $vlaStartTime = self::get_vla_start_time($vlaStartField);
+        $vlaEndTime = self::get_vla_end_time($vlaEndField);
+        
+        if(is_null($vlaStartTime) || is_null($vlaEndTime))
+            return false;
+        
+        $currentTime = time();
+        
+        return ($currentTime >= $vlaStartTime && $currentTime <= $vlaEndTime);
+    }
+
+    function cache_vla_cols($event) {
+        $user_cache_data = $event['user_cache_data'];
+        $poster_id = $event['poster_id'];
+        $row = $event['row'];
+
+        $is_vla = self::is_user_vla($row['user_vla_start'], $row['user_vla_till']);
+
+        $user_cache_data['vla'] = (bool) $is_vla;
+        $user_cache_data['vla_start'] = ($row['user_vla_start'] != '') ? $row['user_vla_start'] : '';
+        $user_cache_data['vla_end'] = ($row['user_vla_till'] != '') ? $row['user_vla_till'] : '';
+        $user_cache_data['vla_display'] = $is_vla ? strftime("%A, %B %d %Y") : "";
+
+        $event['user_cache_data'] = $user_cache_data;
+    }
+
+    function assoc_vla_data($event) {
+        $user_cache = $event['user_cache'];
+        $poster_id = $event['poster_id'];
+        $post_row = $event['post_row'];
+
+        $post_row['S_VLA'] = $user_cache[$poster_id]['vla'];
+		$post_row['S_VLA_END'] = $user_cache[$poster_id]['vla_display'];
+        $post_row['S_VLA_UNTIL'] = $this->language->lang('VLA_UNTIL', $user_cache[$poster_id]['vla_display']);
+
+        $event['post_row'] = $post_row;
     }
 }
 ?>
