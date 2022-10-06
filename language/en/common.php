@@ -50,11 +50,13 @@ The account "%s" would like to add you as a main or alias. Please [url="app.php/
 	'VLA_SET_START_DATE'			=> 'V/LA Status Start Date',
 	'VLA_SET_END_DATE'				=> 'V/LA Status End Date',
 	'NO_VLA_DATA'				=> 'No V/LA start or end dates were specified. Ensure that these fields are correctly entered.',
-	'MISMATCHED_VLA_DATE'			=> 'You cannot end a V/LA before it starts.',
+	'MISMATCHED_VLA_DATE'		=> 'You cannot end a V/LA before it starts.',
 	'VLA_DATE_PRIOR'			=> 'You cannot start or end a V/LA in the past.',
 	'VLA_TOO_SMALL'				=> 'Your V/LA must be at least three days in length.',
 	'VLA_TOO_LARGE'				=> 'Your V/LA must be no longer than two months.',
-	'UCP_VLA_SETTINGS_TITLE'          => 'Vacation / Limited Access',
-	'UCP_VLA_TITLE'                   => 'Vacation / Limited Access',
-	'VLA_UNTIL'                       => 'On Vacation/Limited Access Until %s'
+	'UCP_VLA_SETTINGS_TITLE'    => 'Vacation / Limited Access',
+	'UCP_VLA_TITLE'             => 'Vacation / Limited Access',
+	'VLA_UNTIL'                 => 'On Vacation/Limited Access Until %s',
+	'MAFIA_WIKI'                => 'Mafia wiki',
+	'RULES'                     => 'Rules'
 ));
