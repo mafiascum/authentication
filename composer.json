@@ -15,13 +15,13 @@
     "require": {
         "php": ">=7.1.3",
         "composer/installers": "~1.0",
-        "phpbb/phpbb": "=3.3.4",
+        "phpbb/phpbb": ">=3.1.0-a2",
         "laminas/laminas-zendframework-bridge": ">=1.4.0"
     },
     "extra": {
         "display-name": "Authentication & User Management",
         "soft-require": {
-            "phpbb/phpbb": "=3.3.4"
+            "phpbb/phpbb": ">=3.1.0-a2"
         }
     }
 }
