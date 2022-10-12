@@ -15,7 +15,7 @@
     "require": {
         "php": "^7.1 || ^8.0",
         "composer/installers": "~1.0",
-        "phpbb/phpbb": "3.3.x-dev",
+        "phpbb/phpbb": "^3.3",
         "laminas/laminas-zendframework-bridge": ">=1.4.0"
     },
     "replace": {
@@ -24,7 +24,7 @@
     "extra": {
         "display-name": "Authentication & User Management",
         "soft-require": {
-            "phpbb/phpbb": "3.3.x-dev"
+            "phpbb/phpbb": "^3.3"
         }
     }
 }
