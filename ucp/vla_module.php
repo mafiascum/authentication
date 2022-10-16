@@ -16,6 +16,10 @@ class vla_module
 		{
 			case 'settings':
 				add_form_key('ucp_vla_settings');
+
+				$s_vlastart_day_options = "";
+				$s_vlastart_month_options = "";
+				$s_vlastart_year_options = "";
 				
 				//Initial VLA status determination.
 				$onVLA = false;
@@ -191,7 +195,7 @@ class vla_module
 				$now = getdate();
 				for ($i = $now['year']; $i <= ($now['year'] + 1); $i++)
 				{
-					$selected = ($i == $selectionyear) ? ' selected="selected"' : '';
+					$selected = ($i == $selectionYear) ? ' selected="selected"' : '';
 					$s_vlastart_year_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
 				unset($now);
@@ -238,7 +242,7 @@ class vla_module
 			
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_VLA_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang['UCP_VLA_' . strtoupper($mode) . '_TITLE'],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> $this->u_action)
