@@ -18,6 +18,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class main_listener implements EventSubscriberInterface
 {
+    /* phpbb\config\config */
+    protected $config;
+
     /* @var \phpbb\controller\helper */
     protected $helper;
 
@@ -60,13 +63,14 @@ class main_listener implements EventSubscriberInterface
             'core.user_add_after' => 'check_user_conflicts',
             'core.viewforum_get_topic_data' => 'disable_anonymous_new_topics',
             'core.viewtopic_get_post_data' => 'append_vla_select_cols',
-            'core.viewtopic_cache_user_data' => 'cache_vla_cols',
-            'core.viewtopic_modify_post_row' => 'assoc_vla_data',
+            'core.viewtopic_cache_user_data' => 'cache_addl_user_data',
+            'core.viewtopic_modify_post_row' => 'assoc_addl_user_data',
         );
     }
 
-    public function __construct(\phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\db\driver\driver_interface $db,  \phpbb\user $user, \phpbb\user_loader $user_loader, \phpbb\language\language $language, \phpbb\auth\auth $auth, $table_prefix)
+    public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\db\driver\driver_interface $db,  \phpbb\user $user, \phpbb\user_loader $user_loader, \phpbb\language\language $language, \phpbb\auth\auth $auth, $table_prefix)
     {
+        $this->config = $config;
         $this->helper = $helper;
         $this->template = $template;
         $this->request = $request;
@@ -79,23 +83,21 @@ class main_listener implements EventSubscriberInterface
 	}
 	
 	public function check_user_conflicts($event){
-		
-		global $db, $config;
 		$user_row = $event["user_row"];
 		$user_id = $event["user_id"];
 
 		$sql = " SELECT user.user_id USER_ID, IF(alts.main_user_id IS NOT NULL, 1, 0) IS_MAIN"
 	         . " FROM " . USERS_TABLE . " user"
 	         . " LEFT JOIN " . $this->table_prefix . "alts alts ON(alts.main_user_id=user.user_id)"
-			 . " WHERE user.user_email='" . $db->sql_escape($user_row['user_email']) . "'"
+			 . " WHERE user.user_email='" . $this->db->sql_escape($user_row['user_email']) . "'"
 			 . " AND user.user_id != " . $user_id
 	         . " GROUP BY user.user_id"
 	         . " ORDER BY 2 DESC, user.user_id ASC"
 	         . " LIMIT 1";
 
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = $this->db->sql_fetchrow($result))
 		{
 			$main_user_id = $row['USER_ID'];
 			$this->db->sql_freeresult($result);
@@ -394,10 +396,38 @@ class main_listener implements EventSubscriberInterface
         return ($currentTime >= $vlaStartTime && $currentTime <= $vlaEndTime);
     }
 
-    function cache_vla_cols($event) {
+    function cache_addl_user_data($event) {
         $user_cache_data = $event['user_cache_data'];
         $poster_id = $event['poster_id'];
         $row = $event['row'];
+
+        $now = $this->user->create_datetime();
+        $day = (int) $now->format('d');
+        $month = (int) $now->format('m');
+
+        //birthday
+        $user_cache_data['user_birthday'] = false;
+        if ($this->config['allow_birthdays'] && !empty($row['user_birthday'])) {
+            list($bday_day, $bday_month) = array_map('intval', explode('-', $row['user_birthday']));
+
+            if ($bday_day === $day && $bday_month === $month)
+            {
+                $user_cache_data['user_birthday'] = true;
+            }
+        }
+
+        // scumday
+        $user_cache_data['user_scumday'] = false;
+        if ($this->config['allow_birthdays'] && !empty($row['user_regdate'])) {
+            $scumday = $this->user->create_datetime();
+            $scumday->setTimestamp($row['user_regdate']);
+            $sday_day = (int) $scumday->format('d');
+            $sday_month = (int) $scumday->format('m');
+
+            if ($sday_day === $day && $sday_month === $month) {
+                $user_cache_data['user_scumday'] = true; 
+            }
+        }
 
         $is_vla = self::is_user_vla($row['user_vla_start'], $row['user_vla_till']);
 
@@ -409,11 +439,13 @@ class main_listener implements EventSubscriberInterface
         $event['user_cache_data'] = $user_cache_data;
     }
 
-    function assoc_vla_data($event) {
+    function assoc_addl_user_data($event) {
         $user_cache = $event['user_cache'];
         $poster_id = $event['poster_id'];
         $post_row = $event['post_row'];
 
+        $post_row['S_BIRTHDAY'] = $user_cache[$poster_id]['user_birthday'];
+        $post_row['S_SCUMDAY'] = $user_cache[$poster_id]['user_scumday'];
         $post_row['S_VLA'] = $user_cache[$poster_id]['vla'];
 		$post_row['S_VLA_END'] = $user_cache[$poster_id]['vla_display'];
         $post_row['S_VLA_UNTIL'] = $this->language->lang('VLA_UNTIL', $user_cache[$poster_id]['vla_display']);

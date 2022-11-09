@@ -58,5 +58,7 @@ The account "%s" would like to add you as a main or alias. Please [url="app.php/
 	'UCP_VLA_TITLE'             => 'Vacation / Limited Access',
 	'VLA_UNTIL'                 => 'On Vacation/Limited Access Until %s',
 	'MAFIA_WIKI'                => 'Mafia wiki',
-	'RULES'                     => 'Rules'
+	'RULES'                     => 'Rules',
+	'VIEWTOPIC_BIRTHDAY'        => 'Happy Birthday!',
+	'VIEWTOPIC_SCUMDAY'        => 'Happy Scumday!',
 ));

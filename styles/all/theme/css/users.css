@@ -3,3 +3,9 @@
 	background-repeat: no-repeat;
 	background-position: right top;
 }
+.birthday {
+	content: url("./icon_birthday.png");
+}
+.scumday {
+	content: url("./icon_scumday.png");
+}

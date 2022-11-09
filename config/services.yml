@@ -2,6 +2,7 @@ services:
   mafiascum.authentication.listener:
     class: mafiascum\authentication\event\main_listener
     arguments:
+      - '@config'
       - '@controller.helper'
       - '@template'
       - '@request'
